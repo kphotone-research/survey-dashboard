@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Survey Tracker Dashboard</title>
+  <style>
+    body { font-family: Arial, sans-serif; padding: 20px; }
+    table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+    th, td { padding: 10px; border: 1px solid #ddd; text-align: left; }
+    th { background-color: #f4f4f4; }
+  </style>
+</head>
+<body>
+  <h2>Survey Logs Dashboard</h2>
+  <table id="logs-table">
+    <thead>
+      <tr>
+        <th>Project ID</th>
+        <th>Survey ID</th>
+        <th>Status</th>
+        <th>Timestamp</th>
+      </tr>
+    </thead>
+    <tbody></tbody>
+  </table>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
+  <script>
+    const SUPABASE_URL = 'https://hpxcfhohoyjxyhfdxqlr.supabase.co';
+    const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImhweGNmaG9ob3lqeHloZmR4cWxyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDQyMTU0ODcsImV4cCI6MjA1OTc5MTQ4N30.S4EBc-WSIainf4En42v2TBHs-azE5-AVBOFGamxOCz4';
+
+    const supabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+    async function loadLogs() {
+      const { data, error } = await supabase
+        .from('redirect_logs')
+        .select('*')
+        .order('timestamp', { ascending: false });
+
+      if (error) {
+        alert('Error loading logs');
+        return;
+      }
+
+      const tableBody = document.querySelector('#logs-table tbody');
+      tableBody.innerHTML = '';
+
+      data.forEach(row => {
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+          <td>${row.project_id}</td>
+          <td>${row.survey_id}</td>
+          <td>${row.status}</td>
+          <td>${new Date(row.timestamp).toLocaleString()}</td>
+        `;
+        tableBody.appendChild(tr);
+      });
+    }
+
+    loadLogs();
+  </script>
+</body>
+</html>
